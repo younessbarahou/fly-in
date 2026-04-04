@@ -1,0 +1,12 @@
+[project]
+name = "fly-in"
+version = "0.0.1"
+description = "Fly in project"
+requires-python = ">=3.9"
+dependencies = [
+"pydantic",
+"mypy"
+]
+
+[tool.poetry]
+package-mode = false
