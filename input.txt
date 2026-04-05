@@ -1,3 +1,6 @@
-nb_drones: <positive_integer>
+nb_drones: 1
+#comment
 one start_hub(unique name+ no space / dashes) + valid integer coordinates:
 one end_hub(unique name) + valid integer coordinates:
+hub
+connection = 0404
