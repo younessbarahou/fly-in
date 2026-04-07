@@ -29,43 +29,50 @@ class Parser:
                 )
 
     def check_start_hub(self, start_line: List[str]) -> None:
-        print(start_line)
-        print(start_line.split(' '))
         if len(self.centered_data['start_hub']) != 0:
-            raise ValueError("start hub should not be duplicated !")
-        if len(start_line.split(' ')) == 4:
-            expected_format: re.Pattern = re.compile(
-                'start_hub *: *[a-z]{3,8} *[0-9]{1,} *[0-9]{1,}'
-            )
-            print(re.fullmatch(expected_format, start_line))
-            if re.fullmatch(expected_format, start_line):
-                start_values: List[str] = start_line.split(':')[1].strip().split(
-                    ' '
-                )
-                hub_name, x_coord, y_coord = start_values
-                self.centered_data['start_hub'].update(
-                    {
-                        'hub_name': hub_name,
-                        'x_coord': x_coord,
-                        'y_coord': y_coord
-                    }
-                )
+            raise ValueError("start hub should not be duplicated!")
+        if len(start_line.split(':')) == 2:
+            start_splitted: List[str] = start_line.split(':')[1].split(' ', 4)
+            # remove spaces
+            start_splitted = [s for s in start_splitted if s != '']
+            if len(start_splitted) == 3 or len(start_splitted) == 4:
+                start_name: str = ""
+                x_coord: int = -1
+                y_coord: int = -1
+                if (
+                    type(start_splitted[0]) is not str or
+                    '-' in start_splitted[0] or
+                    ' ' in start_splitted[0]
+                ):
+                    raise ValueError("Invalid start_hub name !")
+                try:
+                    x_coord = int(start_splitted[1])
+                    y_coord = int(start_splitted[2])
+                    if x_coord < 0 or y_coord < 0:
+                        raise ValueError()
+                except ValueError:
+                    raise ValueError("Both start_hub coordinates should be valid positive integers !")
+                start_name = start_splitted[0]
+                self.centered_data['start_hub'].update({
+                    'name': start_name,
+                    'x': x_coord,
+                    'y': y_coord}
+                    )
+                if len(start_splitted) == 4:
+                    buffer_start: List[str] = start_splitted[3].split(' ')
+                    if len(buffer_start) < 3 and len(buffer_start) > 1:
+                        for s in buffer_start:
+                            if (
+                                len(s.split("=")) != 2 or type(s.split("=")[0]) != str or
+                                (type(s.split("=")[1]) != str and type(s.split("=")[1]) != int)
+                            ):
+                                raise ValueError(f"Invalid metadata {s.split('=')}")
+                    else:
+                        raise ValueError("Invalid metadata; [zone=str color=str max_drones=int]")
             else:
-                raise ValueError(
-                    "Invalid start hub\nexpected=>start_hub: <hub_name(should not contain dashes / spaces)> <x> <y> [](optional)"
-                )
-        elif len(start_line.split(' ')) >= 5:
-            expected_format: re.Pattern = re.compile(
-                r'start_hub *: *[a-z]{3,8} *[0-9]{1,} *[0-9]{1,} \[[[a-z]{3,} *= *[a-z0-9]]{1,3}\]'
-            )
-            if re.fullmatch(expected_format, start_line):
-                print(True)
-            else:
-                print(False)
+                raise ValueError("Invalid Start hub; start_hub: name <x> <y> [metadata](optional)")
         else:
-            raise ValueError(
-                "Invalid start hub\nexpected=>start_hub: <hub_name(should not contain dashes / spaces)> <x> <y> [](optional)"
-                )
+            raise ValueError("Invalid Start hub; start_hub: name <x> <y> [metadata](optional)")
 
     def check_end_hub(self) -> None:
         pass
