@@ -29,50 +29,85 @@ class Parser:
                 )
 
     def check_start_hub(self, start_line: List[str]) -> None:
-        if len(self.centered_data['start_hub']) != 0:
-            raise ValueError("start hub should not be duplicated!")
-        if len(start_line.split(':')) == 2:
-            start_splitted: List[str] = start_line.split(':')[1].split(' ', 4)
-            # remove spaces
-            start_splitted = [s for s in start_splitted if s != '']
-            if len(start_splitted) == 3 or len(start_splitted) == 4:
-                start_name: str = ""
-                x_coord: int = -1
-                y_coord: int = -1
-                if (
-                    type(start_splitted[0]) is not str or
-                    '-' in start_splitted[0] or
-                    ' ' in start_splitted[0]
-                ):
-                    raise ValueError("Invalid start_hub name !")
-                try:
-                    x_coord = int(start_splitted[1])
-                    y_coord = int(start_splitted[2])
-                    if x_coord < 0 or y_coord < 0:
+        try:
+            if len(self.centered_data['start_hub']) != 0:
+                raise ValueError("start hub should not be duplicated!")
+            if len(start_line.split(':')) == 2:
+                start_splitted: List[str] = start_line.split(':')[1].split(' ', 4)
+                # remove spaces
+                start_splitted = [s for s in start_splitted if s != '']
+                if len(start_splitted) == 3 or len(start_splitted) == 4:
+                    nb_format: re.Pattern = re.compile('[0-9]{1,}')
+                    start_name: str = ""
+                    x_coord: int = -1
+                    y_coord: int = -1
+                    if (
+                        re.fullmatch(nb_format, start_splitted[0]) or
+                        type(start_splitted[0]) is not str or
+                        '-' in start_splitted[0] or
+                        ' ' in start_splitted[0]
+                    ):
                         raise ValueError()
-                except ValueError:
-                    raise ValueError("Both start_hub coordinates should be valid positive integers !")
-                start_name = start_splitted[0]
-                self.centered_data['start_hub'].update({
-                    'name': start_name,
-                    'x': x_coord,
-                    'y': y_coord}
+                    try:
+                        x_coord = int(start_splitted[1])
+                        y_coord = int(start_splitted[2])
+                        if x_coord < 0 or y_coord < 0:
+                            raise ValueError()
+                    except ValueError:
+                        raise ValueError()
+                    start_name = start_splitted[0]
+                    self.centered_data['start_hub'].update({
+                        'name': start_name,
+                        'x': x_coord,
+                        'y': y_coord,
+                        'zone_type': 'normal',
+                        'color': None,
+                        'max_drones': 1
+                        }
                     )
-                if len(start_splitted) == 4:
-                    buffer_start: List[str] = start_splitted[3].split(' ')
-                    if len(buffer_start) < 3 and len(buffer_start) > 1:
-                        for s in buffer_start:
-                            if (
-                                len(s.split("=")) != 2 or type(s.split("=")[0]) != str or
-                                (type(s.split("=")[1]) != str and type(s.split("=")[1]) != int)
-                            ):
-                                raise ValueError(f"Invalid metadata {s.split('=')}")
+                    if len(start_splitted) == 4:
+                        buffer_start: List[str] = start_splitted[3]
+                        expected_format: re.Pattern = re.compile(r'\[[a-z_]{1,}=[a-z1-9]{1,}( [a-z_]{1,}=[a-z1-9]{1,}){0,2}\]')
+                        if re.fullmatch(expected_format, buffer_start):
+                            buffer_start = buffer_start.replace('[', '')
+                            buffer_start = buffer_start.replace(']', '')
+                            metadata_check: List[List[str]] = buffer_start.split(' ')
+                            for data in metadata_check:
+                                temp_split: List[str] = data.split("=")
+                                match temp_split[0]:
+                                    case 'zone':
+                                        match temp_split[1]:
+                                            case 'normal':
+                                                pass
+                                            case 'blocked':
+                                                self.centered_data['start_hub'].update({'zone': 'blocked'})
+                                            case 'restricted':
+                                                self.centered_data['start_hub'].update({'zone': 'restricted'})
+                                            case 'priority':
+                                                self.centered_data['start_hub'].update({'zone': 'priority'})
+                                            case _:
+                                                raise ValueError()
+                                    case 'color':
+                                        match temp_split[1]:
+                                            case 'green':
+                                                self.centered_data['start_hub'].update({'color': 'green'})
+                                            case 'blue':
+                                                self.centered_data['start_hub'].update({'color': 'blue'})
+                                            case 'red':
+                                                self.centered_data['start_hub'].update({'color': 'red'})
+                                            case _:
+                                                raise ValueError()
+                                    case 'max_drones':
+                                        temp_nb: int = int(temp_split[1])
+                                        self.centered_data['start_hub'].update({'max_drones': temp_nb})
+                                    case _:
+                                        raise ValueError()
+                        else:
+                            raise ValueError()
                     else:
-                        raise ValueError("Invalid metadata; [zone=str color=str max_drones=int]")
-            else:
-                raise ValueError("Invalid Start hub; start_hub: name <x> <y> [metadata](optional)")
-        else:
-            raise ValueError("Invalid Start hub; start_hub: name <x> <y> [metadata](optional)")
+                        raise ValueError()
+        except ValueError:
+            raise ValueError("Invalid start_hub; expected=> <start_hub: hub_name x y [metadata](Optional)>\nhub_name: valid string with no dashes / spaces\n'x': valid positive integer\n'y': valid positive integer\nmetadata(Optional):\n'color'=red | green | blue\n'zone'=normal| blocked | restricted | priority\n'max_drones'= valid positive integer\n example:\nstart_hub: hub1 0 0 [color=green zone=normal]")
 
     def check_end_hub(self) -> None:
         pass
@@ -118,6 +153,8 @@ class Parser:
             raise PermissionError(
                 "Reading input file failed !\nPermission Error."
             )
+        except ValueError as e:
+            print(e)
 
 
 if __name__ == "__main__":
