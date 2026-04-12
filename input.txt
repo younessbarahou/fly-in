@@ -1,6 +1,6 @@
 nb_drones: 1
 #comment
-start_hub: abc 12
-end_hub: def- 0 1
-connection : 0404
-hub: 3
+start_hub: abc1 1 0
+end_hub: def 0 0 [zone=normal max_drones=1]
+hub: ab1 1 1
+connection: ab1-abc1
