@@ -1,6 +1,6 @@
 nb_drones: 1
 #comment
 start_hub: abc1 1 0
-end_hub: def 0 0 [zone=normal max_drones=1]
+end_hub: def 0 0 [max_drones=1 zone=normal color=blue]
 hub: ab1 1 1
-connection: ab1-abc1
+connection: ab1-abc1 [max_link_capacity=19]
