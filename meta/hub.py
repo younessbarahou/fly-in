@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 class Hub:
     def __init__(
             self, name: str,
@@ -13,3 +16,4 @@ class Hub:
         self.zone: str = zone
         self.color: str = color
         self.max_drones: int = max_drones
+        self.neighbors: Dict[str, Hub] = {}

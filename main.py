@@ -1,16 +1,19 @@
-from parsing import Parser, ParsingError, Data
+from parsing import Parser, ParsingError, DataBase
+from meta.graph import Graph
 
 
 class Main():
+    @staticmethod
     def main() -> None:
         try:
             Data_Parser: Parser = Parser()
-            Data_result: Data = Data_Parser.parse('input.txt')
-            print(Data_result)
+            Data_result: DataBase = Data_Parser.parse('input.txt')
+            g = Graph(Data_result)
+            print(g.graph)
         except ParsingError as e:
             print(e)
 
 
 if __name__ == "__main__":
-    main: Main = Main()
-    Main.main()
+    main_t: Main = Main()
+    main_t.main()

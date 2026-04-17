@@ -1,4 +1,4 @@
-from typing import List, Tuple, Set
+from typing import List, Tuple, Set, Dict
 from meta.start_hub import StartHub
 from meta.hub import Hub
 from meta.end_hub import EndHub
@@ -11,42 +11,45 @@ class ParsingError(Exception):
     pass
 
 
-class Data():
+class DataBase():
     """ Object That holds all parameters passed through the input file """
     def __init__(
             self,
             nb_drones: int,
             start_hub: StartHub,
             end_hub: EndHub,
-            hubs: List[Hub],
-            connections: List[Connection]
+            hubs: Dict[str, Hub],
+            connections: List[Tuple[str, str, int]]
     ) -> None:
         """ Initialize data + connections and hubs verification """
         self.nb_drones = nb_drones
-        total_hubs_names: List[str] = [h.name for h in hubs] + [
+        total_hubs_names: List[str] = [h for h in hubs] + [
             start_hub.name, end_hub.name]
         total_hubs_coordinates: List[Tuple[int, int]] = [
-            (h.x, h.y) for h in hubs] + [
+            (hubs[h].x, hubs[h].y) for h in hubs] + [
                 (start_hub.x, start_hub.y), (end_hub.x, end_hub.y)]
         set_hub_names: Set[str] = set(total_hubs_names)
         set_hub_coordinates: Set[Tuple[int, int]] = set(total_hubs_coordinates)
         if len(total_hubs_names) != len(set_hub_names):
             raise ParsingError("hubs names should not be duplicated !")
+        self.start_hub = start_hub
+        self.end_hub = end_hub
+        self.hubs = hubs
         if len(set_hub_coordinates) != len(total_hubs_coordinates):
             raise ParsingError("hubs coordinates should not be duplicated")
         for connection in connections:
-            if connection.name_1 not in total_hubs_names:
+            if connection[0] not in total_hubs_names:
                 raise ParsingError(
-                    f"Invalid hub '{connection.name_1}' in connection " +
-                    f"'{connection.name_1}-{connection.name_2}'!"
+                    f"Invalid hub '{connection[0]}' in connection " +
+                    f"'{connection[0]}-{connection[1]}'!"
                     )
-            if connection.name_2 not in total_hubs_names:
+            if connection[1] not in total_hubs_names:
                 raise ParsingError(
-                    f"Invalid hub '{connection.name_2}' in connection " +
-                    f"'{connection.name_1}-{connection.name_2}'!"
+                    f"Invalid hub '{connection[1]}' in connection " +
+                    f"'{connection[0]}-{connection[1]}'!"
                     )
         total_connections: List[Tuple[str, str]] = [
-            (c.name_1, c.name_2) for c in connections]
+            (c[0], c[1]) for c in connections]
         temp_index: int = 0
         while temp_index < len(total_connections) - 1:
             temp_jndex: int = temp_index + 1
@@ -75,10 +78,16 @@ class Data():
                         )
                 temp_jndex += 1
             temp_index += 1
-        self.start_hub = start_hub
-        self.end_hub = end_hub
-        self.hubs = hubs
-        self.connections = connections
+        hubs_map: Dict[str, Hub] = {h: hubs[h] for h in self.hubs}
+        hubs_map.update({self.start_hub.name: self.start_hub})
+        hubs_map.update({self.end_hub.name: self.end_hub})
+        connections_to_hubs: List[Connection] = [
+            Connection(
+                hubs_map[c[0]],
+                hubs_map[c[1]],
+                c[2]
+            ) for c in connections]
+        self.connections = connections_to_hubs
 
 
 class Parser:
@@ -198,7 +207,7 @@ class Parser:
             max_drones[-1]
         )
 
-    def check_connection(self, line: str) -> Connection:
+    def check_connection(self, line: str) -> Tuple[str, str, int]:
         """ checks and validate connection parameter """
         try:
             if len(line.split(":")) == 2:
@@ -227,7 +236,7 @@ class Parser:
                         )
                         if max_link_capacity == 0:
                             raise ParsingError()
-                    return Connection(name_1, name_2, max_link_capacity)
+                    return (name_1, name_2, max_link_capacity)
                 else:
                     raise ParsingError()
             else:
@@ -243,8 +252,8 @@ class Parser:
                 "connection: hub1-hub2 [max_link_capacity=5]"
             )
 
-    def parse(self, file_name: str) -> Data:
-        """ main orchestrator that setup the final result data """
+    def parse(self, file_name: str) -> DataBase:
+        """ main orchestrator that setups the final result data """
         try:
             with open(file_name, 'r') as file:
                 lines: List[str] = file.readlines()
@@ -265,8 +274,8 @@ class Parser:
                 lines = lines[1:]
                 start_result: List[StartHub] = []
                 end_result: List[EndHub] = []
-                hub_result: List[Hub] = []
-                connection_result: List[Connection] = []
+                hub_result: Dict[str, Hub] = {}
+                connection_result: List[Tuple[str, str, int]] = []
                 for line in lines:
                     temp_check: List[str] = line.split(':')
                     if (
@@ -320,14 +329,17 @@ class Parser:
                                 line,
                                 'hub'
                             )
-                            hub_result.append(Hub(
-                                h_result[0],
-                                h_result[1],
-                                h_result[2],
-                                h_result[3],
-                                h_result[4],
-                                h_result[5]
-                            ))
+                            hub_result.update(
+                                {
+                                    h_result[0]: Hub(h_result[0],
+                                                     h_result[1],
+                                                     h_result[2],
+                                                     h_result[3],
+                                                     h_result[4],
+                                                     h_result[5]
+                                                     )
+                                }
+                            )
                         case 'connection':
                             connection_result.append(
                                 self.check_connection(line))
@@ -341,7 +353,7 @@ class Parser:
                     raise ParsingError("should be at least one hub !")
                 if len(connection_result) == 0:
                     raise ParsingError("should be at least one connection !")
-                result_data: Data = Data(
+                result_data: DataBase = DataBase(
                     nb_drones,
                     start_result[0],
                     end_result[0],
