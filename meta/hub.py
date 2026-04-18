@@ -17,3 +17,4 @@ class Hub:
         self.color: str = color
         self.max_drones: int = max_drones
         self.neighbors: Dict[str, Hub] = {}
+        self.is_visited: bool = False

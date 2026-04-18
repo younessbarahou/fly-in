@@ -1,5 +1,7 @@
 from parsing import Parser, ParsingError, DataBase
 from meta.graph import Graph
+from meta.hub import Hub
+from meta.graph import ReachableError
 
 
 class Main():
@@ -8,9 +10,13 @@ class Main():
         try:
             Data_Parser: Parser = Parser()
             Data_result: DataBase = Data_Parser.parse('input.txt')
-            g = Graph(Data_result)
-            print(g.graph)
+            graph: Graph = Graph(Data_result)
+            graph.validate()
+            for g in graph.get_graph():
+                print(g, graph.get_graph()[g].is_visited)
         except ParsingError as e:
+            print(e)
+        except ReachableError as e:
             print(e)
 
 
