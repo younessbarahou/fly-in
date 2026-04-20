@@ -11,4 +11,3 @@ class EndHub(Hub):
             max_drones: int
     ) -> None:
         super().__init__(name, x, y, zone, color, max_drones)
-        self.is_end: bool = True

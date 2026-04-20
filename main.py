@@ -2,6 +2,8 @@ from parsing import Parser, ParsingError, DataBase
 from meta.graph import Graph
 from meta.hub import Hub
 from meta.graph import ReachableError
+from typing import List
+from solution import Solution
 
 
 class Main():
@@ -12,8 +14,10 @@ class Main():
             Data_result: DataBase = Data_Parser.parse('input.txt')
             graph: Graph = Graph(Data_result)
             graph.validate()
-            for g in graph.get_graph():
-                print(g, graph.get_graph()[g].is_visited)
+            graph_result = graph.get_graph()
+            Solution.solve(graph_result, Data_result.start_hub, Data_result.end_hub)
+            for g in graph_result.values():
+                print(g.precedent)
         except ParsingError as e:
             print(e)
         except ReachableError as e:
