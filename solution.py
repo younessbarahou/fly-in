@@ -1,13 +1,16 @@
-from meta.graph import Graph
-from typing import Union, Dict, List
+from typing import Dict, List
 from meta.start_hub import StartHub
 from meta.end_hub import EndHub
 from meta.hub import Hub
 
 
 class Solution:
+    """ class that provides the shortest path from start to end """
     @staticmethod
-    def solve(graph: Dict[str, Hub], start_hub: StartHub, end_hub: EndHub) -> None:
+    def solve(
+        graph: Dict[str, Hub], start_hub: StartHub, end_hub: EndHub
+    ) -> List[Hub]:
+        """ produces the shortest path using djikstra algorithm """
         current_node: Hub = start_hub
         start_hub.visited_djikstra = True
         queue: List[Hub] = [
@@ -16,8 +19,10 @@ class Solution:
         ]
         for q in queue:
             q.precedent = current_node
-            q.total_cost = int(q.cost)
-        queue = sorted(queue, key=lambda x: x.total_cost)
+            q.total_cost = q.cost
+        # sorting based on total cost first, then zone secondly
+        queue = sorted(queue, key=lambda x: (
+            x.total_cost, 0 if x.zone == 'priority' else 1))
         while True:
             # selecting and poping from the queue
             current_node = queue[0]
@@ -33,8 +38,13 @@ class Solution:
             ]
             for o in optimal_neighbors:
                 if o.total_cost > current_node.total_cost + o.cost:
-                    o.total_cost = current_node.total_cost + int(o.cost)
+                    o.total_cost = current_node.total_cost + o.cost
                     o.precedent = current_node
                 queue.append(o)
-            queue = sorted(queue, key=lambda x: x.total_cost)
-            path_result: List[Hub] = []
+            queue = sorted(queue, key=lambda x: (
+                x.total_cost, 0 if x.zone == 'priority' else 1))
+        path_result: List[Hub] = [end_hub]
+        while path_result[-1].precedent is not None:
+            path_result.append(path_result[-1].precedent)
+        path_result.reverse()
+        return path_result
