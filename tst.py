@@ -1,2 +1,3 @@
-a = 5
-print(type(a + 1.5))
+a = []
+if a:
+    print(True)

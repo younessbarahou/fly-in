@@ -1,5 +1,12 @@
 from typing import Dict, Optional, List
-from meta.drone import Drone
+
+
+class Drone:
+    def __init__(self) -> None:
+        self.id: str = ""
+        self.arrived: bool = False
+        self.path: List[str] = []
+        self.turns: int = 0
 
 
 class Hub:
