@@ -16,17 +16,19 @@ class Hub:
             y: int,
             zone: str,
             color: str,
-            max_drones: int
+            max_drones: float
     ) -> None:
         self.name: str = name
         self.x: int = x
         self.y: int = y
         self.zone: str = zone
         self.color: str = color
-        self.max_drones: int = max_drones
+        self.max_drones: float = max_drones
         self.drones: List[Drone] = []
         self.neighbors: List[Hub] = []
         self.visited: bool = False
-        self.cost: int = 1
+        self.cost: int = 1.5
         if self.zone == 'restricted':
             self.cost = 2
+        elif self.zone == 'priority':
+            self.cost = 1

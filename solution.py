@@ -4,6 +4,10 @@ from meta.end_hub import EndHub
 from meta.hub import Hub
 
 
+class ReachableError(Exception):
+    pass
+
+
 class Solution:
     """  """
     @staticmethod
@@ -24,5 +28,10 @@ class Solution:
                     dfs(n, path)
             path.pop()
         dfs(start_hub, path)
-        result = sorted(result, key=lambda x: min(x, key=lambda y: y.cost).cost)
+        if len(result) == 0:
+            raise ReachableError(
+                "Start zone and Zone are isolated from each other !")
+        # We sort The paths based on the total cost
+        result = sorted(result, key=lambda x: sum([s.cost for s in x]))
+        # we then label each path with its lowest capacity
         return result

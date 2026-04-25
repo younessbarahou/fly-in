@@ -2,8 +2,8 @@ from parsing import Parser, ParsingError, DataBase
 from meta.graph import Graph
 from meta.hub import Hub, Drone
 from typing import List
-from solution import Solution
-from functools import reduce
+from solution import Solution, ReachableError
+
 
 class Main():
     @staticmethod
@@ -21,10 +21,13 @@ class Main():
                 drone.path.append(Data_result.start_hub.name)
                 drones.append(drone)
                 jndex += 1
-            solution: List[List[Hub]] = Solution.solve(Data_result.start_hub, Data_result.end_hub)
+            solution: List[List[Hub]] = Solution.solve(
+                Data_result.start_hub, Data_result.end_hub)
             for s in solution:
-                print(s, min(s, key=lambda x: x.cost).cost)
+                print(sum([a.cost for a in s]))
         except ParsingError as e:
+            print(e)
+        except ReachableError as e:
             print(e)
 
 
