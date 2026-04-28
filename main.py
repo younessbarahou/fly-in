@@ -1,5 +1,5 @@
 from parsing import Parser, ParsingError, DataBase
-from meta.graph import Graph
+from meta.graph import GraphBuilder
 from meta.hub import Hub, Drone
 from typing import List
 from solution import Solution, ReachableError
@@ -12,7 +12,8 @@ class Main():
         try:
             Data_Parser: Parser = Parser()
             Data_result: DataBase = Data_Parser.parse('input.txt')
-            Graph(Data_result)
+            graph: GraphBuilder = GraphBuilder(Data_result)
+            graph.setup()
             drones: List[Drone] = []
             nb_drones: int = Data_result.nb_drones
             jndex: int = 0
