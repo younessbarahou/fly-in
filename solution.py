@@ -11,11 +11,12 @@ class ReachableError(Exception):
 
 
 class Solution:
-    """  """
+    """ produces the solutions paths """
     @staticmethod
     def solve(
         start_hub: StartHub, end_hub: EndHub, connections: List[Connection]
     ) -> List[Path]:
+        """ returns all possible paths using Dfs algorithm (recursive)"""
         result: List[Path] = []
         path: List[Hub] = []
 

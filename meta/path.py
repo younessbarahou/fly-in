@@ -1,5 +1,6 @@
 from typing import List
 from meta.hub import Hub
+from meta.drone import Drone
 
 
 class Path:
@@ -16,3 +17,6 @@ class Path:
                 self.total_cost += 1.5
             else:
                 self.real_cost += 2
+        self.decision: int = min(self.max_drones_number,
+                                 self.max_connection_capacity)
+        self.drones: List[Drone] = []
