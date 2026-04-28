@@ -8,7 +8,7 @@ class Engine:
         self.paths = paths
         self.drones = drones
 
-    def solve(self) -> None:
+    def simulate(self) -> None:
         drones_for_each_voyage: int = sum([p.decision for p in self.paths])
         queue: List[Drone] = self.drones
         # trippin

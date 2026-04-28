@@ -2,7 +2,7 @@ from parsing import Parser, ParsingError, DataBase
 from meta.graph import GraphBuilder
 from meta.hub import Hub, Drone
 from typing import List
-from solution import Solution, ReachableError
+from solution import PathsGenerator, ReachableError
 from engine import Engine
 
 
@@ -23,13 +23,13 @@ class Main():
                 drone.path.append(Data_result.start_hub.name)
                 drones.append(drone)
                 jndex += 1
-            solution: List[List[Hub]] = Solution.solve(
+            solution: List[List[Hub]] = PathsGenerator.solve(
                 Data_result.start_hub,
                 Data_result.end_hub, Data_result.connections)
         except ParsingError as e:
             print(e)
-        except ReachableError as e:
-            print(e)
+        except ReachableError:
+            print("Start zone and End Zone are isolated from each other !")
 
 
 if __name__ == "__main__":

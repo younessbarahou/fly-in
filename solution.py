@@ -10,10 +10,10 @@ class ReachableError(Exception):
     pass
 
 
-class Solution:
+class PathsGenerator:
     """ produces the solutions paths """
     @staticmethod
-    def solve(
+    def generate(
         start_hub: StartHub, end_hub: EndHub, connections: List[Connection]
     ) -> List[Path]:
         """ returns all possible paths using Dfs algorithm (recursive)"""
@@ -32,8 +32,7 @@ class Solution:
             path.pop()
         dfs(start_hub, path)
         if len(result) == 0:
-            raise ReachableError(
-                "Start zone and End Zone are isolated from each other !")
+            raise ReachableError()
         # We sort The paths based on the total cost
         result = sorted(result, key=lambda x: x.total_cost)
         # we then label each path with its lowest drones capacity in zones

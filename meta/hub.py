@@ -1,12 +1,11 @@
-from typing import List
+from typing import List, Optional
+from meta.path import Path
 
 
 class Drone:
     def __init__(self) -> None:
         self.id: str = ""
-        self.arrived: bool = False
-        self.path: List[str] = []
-        self.turns: int = 0
+        self.path: Optional[Path] = None
 
 
 class Hub:
