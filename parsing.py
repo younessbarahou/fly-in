@@ -117,14 +117,14 @@ class Parser:
             if len(start_line.split(':')) == 2:
                 start_data: str = start_line.split(':')[1]
                 expected_optional: re.Pattern[str] = re.compile(
-                    r' *[a-zA-Z_]{1,}([0-9]{1,})? '
-                    r'{1,}[0-9]{1,} {1,}[0-9]{1,} {1,}' +
+                    r' *[a-zA-Z_]{1,}([0-9]{1,})? ' +
+                    r'{1,}(-)?[0-9]{1,} {1,}(-)?[0-9]{1,} {1,}' +
                     r'\[ *[a-zA-Z_]{1,}=[a-zA-Z0-9]{1,}' +
                     r'( {1,}[a-zA-Z_]{1,}=[a-zA-Z0-9]{1,}){0,2} *\]'
                 )
                 expected_mandatory: re.Pattern[str] = re.compile(
                     r' *[a-zA-Z_]{1,}([0-9]{1,})? ' +
-                    r'{1,}[0-9]{1,} {1,}[0-9]{1,} *')
+                    r'{1,}(-)?[0-9]{1,} {1,}(-)?[0-9]{1,} *')
                 if (
                     re.fullmatch(expected_mandatory, start_data) or
                     re.fullmatch(expected_optional, start_data)
@@ -213,10 +213,10 @@ class Parser:
             if len(line.split(":")) == 2:
                 connection_value: str = line.split(":")[1]
                 expected_mandatory: re.Pattern[str] = re.compile(
-                    " *[a-zA-Z]{1,}([0-9]{1,})?-[a-zA-Z]{1,}([0-9]{1,})?"
+                    " *[a-zA-Z_]{1,}([0-9]{1,})?-[a-zA-Z_]{1,}([0-9]{1,})?"
                     )
                 expected_optional: re.Pattern[str] = re.compile(
-                    r" *[a-zA-Z]{1,}([0-9]{1,})?-[a-zA-Z]{1,}([0-9]{1,})? " +
+                    r" *[a-zA-Z_]{1,}([0-9]{1,})?-[a-zA-Z_]{1,}([0-9]{1,})? " +
                     r"\[max_link_capacity *= *[0-9]{1,}\]"
                     )
                 if (

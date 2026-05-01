@@ -11,5 +11,4 @@ class StartHub(Hub):
             max_drones: int
     ) -> None:
         super().__init__(name, x, y, zone, color, max_drones)
-        self.cost = 0
-        self.max_drones = float('inf')
+        # self.max_drones = float('inf')

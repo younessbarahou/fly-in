@@ -23,7 +23,7 @@ class PathsGenerator:
         def dfs(node: Hub, path: List[Hub]) -> None:
             path.append(node)
             if node is end_hub:
-                result.append(Path(path.copy()))
+                result.append(Path(path[1:].copy()))
                 path.pop()
                 return
             for n in node.neighbors:

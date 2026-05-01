@@ -1,11 +1,4 @@
-from typing import List, Optional
-from meta.path import Path
-
-
-class Drone:
-    def __init__(self) -> None:
-        self.id: str = ""
-        self.path: Optional[Path] = None
+from typing import List  
 
 
 class Hub:
@@ -23,11 +16,8 @@ class Hub:
         self.zone: str = zone
         self.color: str = color
         self.max_drones: int = max_drones
-        self.drones: List[Drone] = []
         self.neighbors: List[Hub] = []
         self.visited: bool = False
         self.cost: int = 1
         if self.zone == 'restricted':
             self.cost = 2
-        elif self.zone == 'priority':
-            self.cost = 1
