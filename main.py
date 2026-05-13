@@ -25,7 +25,13 @@ class Main():
             solution: List[Path] = PathsGenerator.generate(
                 Data_result.start_hub,
                 Data_result.end_hub, Data_result.connections)
-            engine: Engine = Engine(Data_result.start_hub.name, solution, drones)
+            # for s in solution:
+            #     print("======")
+            #     print(s.max_drones_number)
+            #     for p in s.nodes:
+            #         print(p.name)
+            #     print("======")
+            engine: Engine = Engine(Data_result.start_hub.name, solution, drones, Data_result.connections)
             engine.simulate()
         except ParsingError as e:
             print(e)

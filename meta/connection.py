@@ -8,3 +8,4 @@ class Connection:
         self.hub_1 = hub_1
         self.hub_2 = hub_2
         self.max_link_capacity = max_link_capacity
+        self.at_transit = 0

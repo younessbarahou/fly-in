@@ -35,9 +35,6 @@ class PathsGenerator:
             raise ReachableError()
         # We sort The paths based on the total cost
         result = sorted(result, key=lambda x: x.total_cost)
-        # we then label each path with its lowest drones capacity in zones
-        for r in result:
-            r.max_drones_number = min(r.nodes, key=lambda x: x.max_drones).cost
         # we label each path with its lowest connection capacity
         for r in result:
             index: int = 0
