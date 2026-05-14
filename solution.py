@@ -36,19 +36,19 @@ class PathsGenerator:
         # We sort The paths based on the total cost
         result = sorted(result, key=lambda x: x.total_cost)
         # we label each path with its lowest connection capacity
-        for r in result:
-            index: int = 0
-            connection_max: List[int] = []
-            while index < len(r.nodes) - 1:
-                for c in connections:
-                    if (
-                        (r.nodes[index].name == c.hub_1.name and r.nodes[
-                            index + 1].name == c.hub_2.name)
-                        or
-                        (r.nodes[index].name == c.hub_2.name and r.nodes[
-                            index + 1].name == c.hub_1.name)
-                    ):
-                        connection_max.append(c.max_link_capacity)
-                index += 1
-            r.max_connection_capacity = min(connection_max)
+        # for r in result:
+        #     index: int = 0
+        #     connection_max: List[int] = []
+        #     while index < len(r.nodes) - 1:
+        #         for c in connections:
+        #             if (
+        #                 (r.nodes[index].name == c.hub_1.name and r.nodes[
+        #                     index + 1].name == c.hub_2.name)
+        #                 or
+        #                 (r.nodes[index].name == c.hub_2.name and r.nodes[
+        #                     index + 1].name == c.hub_1.name)
+        #             ):
+        #                 connection_max.append(c.max_link_capacity)
+        #         index += 1
+        #     r.max_connection_capacity = min(connection_max)
         return result

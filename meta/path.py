@@ -5,7 +5,6 @@ from meta.hub import Hub
 class Path:
     def __init__(self, nodes: List[Hub]) -> None:
         self.nodes = nodes
-        self.max_connection_capacity: int = 0
         self.real_cost: int = sum([n.cost for n in nodes])
         self.total_cost: float = 0
         for node in nodes:
