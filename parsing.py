@@ -3,6 +3,7 @@ from meta.start_hub import StartHub
 from meta.hub import Hub
 from meta.end_hub import EndHub
 from meta.connection import Connection
+from meta.drone import Drone
 import re
 
 
@@ -88,6 +89,9 @@ class DataBase():
                 c[2]
             ) for c in connections]
         self.connections = connections_to_hubs
+        self.drones: List[Drone] = []
+        for index in range(1, self.nb_drones + 1):
+            self.drones.append(Drone(f"D{index}"))
 
 
 class Parser:
@@ -118,13 +122,13 @@ class Parser:
                 start_data: str = start_line.split(':')[1]
                 expected_optional: re.Pattern[str] = re.compile(
                     r' *[a-zA-Z_]{1,}([0-9]{1,})? ' +
-                    r'{1,}(-)?[0-9]{1,} {1,}(-)?[0-9]{1,} {1,}' +
+                    r'{1,}[0-9]{1,} {1,}[0-9]{1,} {1,}' +
                     r'\[ *[a-zA-Z_]{1,}=[a-zA-Z0-9]{1,}' +
                     r'( {1,}[a-zA-Z_]{1,}=[a-zA-Z0-9]{1,}){0,2} *\]'
                 )
                 expected_mandatory: re.Pattern[str] = re.compile(
                     r' *[a-zA-Z_]{1,}([0-9]{1,})? ' +
-                    r'{1,}(-)?[0-9]{1,} {1,}(-)?[0-9]{1,} *')
+                    r'{1,}[0-9]{1,} {1,}[0-9]{1,} *')
                 if (
                     re.fullmatch(expected_mandatory, start_data) or
                     re.fullmatch(expected_optional, start_data)
